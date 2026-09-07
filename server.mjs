@@ -48,8 +48,21 @@ const resourceServer = new x402ResourceServer(facilitatorClient)
 
 await resourceServer.initialize();
 
-// ── Protected routes (POST, JSON-body params — mirrors AgentFund/EscrowRoute) ──
+// ── Protected routes (POST + GET, JSON-body params — mirrors AgentFund/EscrowRoute) ──
+// GET is registered too: OKX's validator probes the bare path with GET (audit E6),
+// so a GET must also return the 402 challenge, not 404.
 const routes = {
+  "GET /v1/market/price": {
+    accepts: {
+      scheme: "exact",
+      network: "eip155:196",
+      payTo: PAYTO,
+      price: "$0.05",
+    },
+    description:
+      "Real-time crypto market price data via x402 pay-per-call. " +
+      "POST JSON body: {\"symbol\":\"BTC\"}. Returns current price for the symbol.",
+  },
   "POST /v1/market/price": {
     accepts: {
       scheme: "exact",
@@ -60,6 +73,17 @@ const routes = {
     description:
       "Real-time crypto market price data via x402 pay-per-call. " +
       "POST JSON body: {\"symbol\":\"BTC\"}. Returns current price for the symbol.",
+  },
+  "GET /v1/security/score": {
+    accepts: {
+      scheme: "exact",
+      network: "eip155:196",
+      payTo: PAYTO,
+      price: "$0.05",
+    },
+    description:
+      "Token risk scoring and rugcheck analysis. " +
+      "POST JSON body: {\"address\":\"0x...\"}. Returns 0-100 risk score + verdict.",
   },
   "POST /v1/security/score": {
     accepts: {
