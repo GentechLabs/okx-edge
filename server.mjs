@@ -51,13 +51,19 @@ await resourceServer.initialize();
 // ── Protected routes (POST + GET, JSON-body params — mirrors AgentFund/EscrowRoute) ──
 // GET is registered too: OKX's validator probes the bare path with GET (audit E6),
 // so a GET must also return the 402 challenge, not 404.
+// Settlement asset: native USDC on X Layer (eip155:196) — 0xb6ceceab302e2e4948951ee7843fc24e92933061
+// (Circle's official contract, decimals 6). Passed as an explicit AssetAmount so the
+// SDK doesn't fall back to its hardcoded USDT0 default for eip155:196.
+const USDC_ASSET = "0xb6ceceab302e2e4948951ee7843fc24e92933061";
+const PRICE = { amount: "50000", asset: USDC_ASSET, extra: {} }; // $0.05 in 6-decimals
+
 const routes = {
   "GET /v1/market/price": {
     accepts: {
       scheme: "exact",
       network: "eip155:196",
       payTo: PAYTO,
-      price: "$0.05",
+      price: PRICE,
     },
     description:
       "Real-time crypto market price data via x402 pay-per-call. " +
@@ -68,7 +74,7 @@ const routes = {
       scheme: "exact",
       network: "eip155:196",
       payTo: PAYTO,
-      price: "$0.05",
+      price: PRICE,
     },
     description:
       "Real-time crypto market price data via x402 pay-per-call. " +
@@ -79,7 +85,7 @@ const routes = {
       scheme: "exact",
       network: "eip155:196",
       payTo: PAYTO,
-      price: "$0.05",
+      price: PRICE,
     },
     description:
       "Token risk scoring and rugcheck analysis. " +
@@ -90,7 +96,7 @@ const routes = {
       scheme: "exact",
       network: "eip155:196",
       payTo: PAYTO,
-      price: "$0.05",
+      price: PRICE,
     },
     description:
       "Token risk scoring and rugcheck analysis. " +
